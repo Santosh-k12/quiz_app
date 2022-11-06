@@ -28,48 +28,48 @@ class _HomeScreenState extends State<HomeScreen> {
         {'text': 'NBA All-Star', 'score': -2},
         {'text': 'Sumo', 'score': -2},
       ],
+      'image': 'assets/naruto.png',
     },
     {
-      'questionText': 'Q2. What is Flutter?',
+      'questionText': 'Q2. Which team does the character "Ino" belong to?',
       'answers': [
-        {'text': 'Android Development Kit', 'score': -2},
-        {'text': 'IOS Development Kit', 'score': -2},
-        {'text': 'Web Development Kit', 'score': -2},
-        {
-          'text':
-              'SDK to build beautiful IOS, Android, Web & Desktop Native Apps',
-          'score': 10
-        },
+        {'text': 'Team 12', 'score': -2},
+        {'text': 'Team 7', 'score': -2},
+        {'text': 'Team 6 ', 'score': -2},
+        {'text': 'Team 10', 'score': 10},
       ],
-    },
-    {
-      'questionText': ' Q3. Which programing language is used by Flutter',
-      'answers': [
-        {'text': 'Ruby', 'score': -2},
-        {'text': 'Dart', 'score': 10},
-        {'text': 'C++', 'score': -2},
-        {'text': 'Kotlin', 'score': -2},
-      ],
-    },
-    {
-      'questionText': 'Q4. Who created Dart programing language?',
-      'answers': [
-        {'text': 'Lars Bak and Kasper Lund', 'score': 10},
-        {'text': 'Brendan Eich', 'score': -2},
-        {'text': 'Bjarne Stroustrup', 'score': -2},
-        {'text': 'Jeremy Ashkenas', 'score': -2},
-      ],
+      'image': 'assets/ino.png',
     },
     {
       'questionText':
-          'Q5. Is Flutter for Web and Desktop available in stable version?',
+          ' Q3. Who is this character paired up with in his first appearance?',
       'answers': [
-        {
-          'text': 'Yes',
-          'score': -2,
-        },
-        {'text': 'No', 'score': 10},
+        {'text': 'Kisame', 'score': -2},
+        {'text': 'Sasori', 'score': 10},
+        {'text': 'Itachi', 'score': -2},
+        {'text': 'Orochimaru', 'score': -2},
       ],
+      'image': 'assets/katsu.png',
+    },
+    {
+      'questionText': 'Q4. Who did the character "jiraiya" train?',
+      'answers': [
+        {'text': 'Lars Bak and Kasper Lund', 'score': 10},
+        {'text': 'Naruto', 'score': 10},
+        {'text': 'Sasuke', 'score': -2},
+        {'text': 'Tsunade', 'score': -2},
+      ],
+      'image': 'assets/jiraiya.png',
+    },
+    {
+      'questionText': 'Q5. How did the character "Itachi" die?',
+      'answers': [
+        {'text': 'Cancer', 'score': -2},
+        {'text': 'Battle', 'score': 10},
+        {'text': 'Suicide', 'score': -2},
+        {'text': 'Over-training', 'score': -2},
+      ],
+      'image': 'assets/itachi.png',
     },
   ];
 
@@ -119,17 +119,20 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: BoxDecoration(
               gradient: LinearGradient(
                   colors: [Colors.yellow, Colors.orange, Colors.deepOrange])),
-          child: Stack(
+          child: Column(
             children: [
               _questionIndex < _questions.length
                   ? Container(
+                      height: MediaQuery.of(context).size.height * 0.6,
                       decoration: BoxDecoration(
-                          image: DecorationImage(
-                        fit: BoxFit.fitHeight,
-                        image: AssetImage(
-                          'assets/naruto.png',
+                        // border: Border.all(color: Colors.black, width: 2),
+                        image: DecorationImage(
+                          fit: BoxFit.contain,
+                          image: AssetImage(
+                            _questions[_questionIndex]['image'].toString(),
+                          ),
                         ),
-                      )),
+                      ),
                     )
                   : Container(),
               _questionIndex < _questions.length

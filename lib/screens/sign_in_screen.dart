@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
-import 'package:quiz_app/provider/login_provider.dart';
+import 'package:quiz_app/provider/sign_in_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz_app/screens/home_screen.dart';
 import 'package:quiz_app/screens/verfication_screen.dart';
@@ -36,12 +36,13 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   void initState() {
     super.initState();
+    _googleSignIn.signOut();
 
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount? account) {
       setState(() {
         _currentUser = account;
         if (account != null) {
-          Provider.of<LoginProvider>(context, listen: false)
+          Provider.of<SigninProvider>(context, listen: false)
               .setProfile(account.photoUrl!, account.displayName!);
         }
         Navigator.pushReplacementNamed(context, HomeScreen.routeName);
@@ -51,7 +52,7 @@ class _SignInScreenState extends State<SignInScreen> {
         print('current user is not equal to null');
         print(account);
         if (account != null) {
-          Provider.of<LoginProvider>(context, listen: false)
+          Provider.of<SigninProvider>(context, listen: false)
               .setProfile(account.photoUrl!, account.displayName!);
         }
         Navigator.pushReplacementNamed(context, HomeScreen.routeName);
@@ -71,81 +72,6 @@ class _SignInScreenState extends State<SignInScreen> {
       await _googleSignIn.signIn();
     } catch (error) {
       print(error);
-    }
-  }
-
-  Future _handlePhoneSignIn() async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: _phoneController.text,
-      verificationCompleted: (PhoneAuthCredential credential) {
-        _auth.signInWithCredential(credential).then((UserCredential result) {
-          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
-        }).catchError((e) {
-          print(e);
-        });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {},
-      codeSent: (String verificationId, int? forceResendingToken) {
-        //show dialog to take input from the user
-        showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => AlertDialog(
-                  title: Text("Enter OTP"),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      TextField(
-                        controller: _codeController,
-                      ),
-                    ],
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text("Done"),
-                      onPressed: () {
-                        FirebaseAuth auth = FirebaseAuth.instance;
-
-                        String _smsCode = _codeController.text.trim();
-
-                        AuthCredential _credential =
-                            PhoneAuthProvider.credential(
-                                verificationId: verificationId,
-                                smsCode: _smsCode);
-                        auth
-                            .signInWithCredential(_credential)
-                            .then((UserCredential result) {
-                          Navigator.pushReplacementNamed(
-                              context, HomeScreen.routeName);
-                        }).catchError((e) {
-                          print(e);
-                        });
-                      },
-                    )
-                  ],
-                ));
-      },
-      verificationFailed: (FirebaseAuthException error) {
-        print(error.message);
-      },
-    );
-  }
-
-  _handleSignInWithEmailandPassword() async {
-    try {
-      final UserCredential credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: _emailController.text, password: _passwordController.text);
-      Navigator.pushNamed(context, AccountConfirmation.routeName);
-
-      credential.user?.sendEmailVerification();
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
     }
   }
 
@@ -223,7 +149,10 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               SizedBox(height: 20),
               TextButton(
-                  onPressed: _handleSignInWithEmailandPassword,
+                  onPressed: () =>
+                      Provider.of<SigninProvider>(context, listen: false)
+                          .handleSignInWithEmailandPassword(
+                              context, _emailController, _passwordController),
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.blue[900],
                     minimumSize:
@@ -264,7 +193,10 @@ class _SignInScreenState extends State<SignInScreen> {
                         child: const Text('Cancel'),
                       ),
                       TextButton(
-                        onPressed: _handlePhoneSignIn,
+                        onPressed: () =>
+                            Provider.of<SigninProvider>(context, listen: false)
+                                .handlePhoneSignIn(context,
+                                    _phoneController.text, _codeController),
                         child: const Text('OK'),
                       ),
                     ],

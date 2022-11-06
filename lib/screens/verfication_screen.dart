@@ -38,18 +38,25 @@ class _AccountConfirmationState extends State<AccountConfirmation> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(
-            height: 10,
-          ),
-          Text('Verifying your email'),
-        ],
-      )),
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              colors: [Colors.yellow, Colors.orange, Colors.deepOrange])),
+      child: Scaffold(
+        body: Center(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              color: Colors.red,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text('Verifying your email', style: TextStyle(fontSize: 18)),
+          ],
+        )),
+      ),
     );
   }
 }

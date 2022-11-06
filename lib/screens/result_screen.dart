@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quiz_app/provider/login_provider.dart';
+import 'package:quiz_app/provider/sign_in_provider.dart';
 
 class Result extends StatelessWidget {
   final int resultScore;
@@ -30,36 +30,21 @@ class Result extends StatelessWidget {
     return resultText;
   }
 
-  final CollectionReference collection =
-      FirebaseFirestore.instance.collection('user-score');
-  Future<DocumentReference> addScore(dynamic score) {
-    return collection.add(score);
-  }
-
-  Future<List> getData() async {
-    QuerySnapshot querySnapshot = await collection.get();
-
-    // Get data from docs and convert map to List
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-
-    print('sssssss${allData}');
-    return allData;
-  }
-
   @override
   Widget build(BuildContext context) {
-    getData();
-    return Consumer<LoginProvider>(builder: (context, loginConsumer, child) {
-      addScore(
+    return Consumer<SigninProvider>(builder: (context, loginConsumer, child) {
+      loginConsumer.getData();
+      loginConsumer.addScore(
         {
           'useId': loginConsumer.profileName,
           'score': resultScore,
           'date': DateTime.now(),
         },
       );
-      return Center(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.9,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -91,29 +76,32 @@ class Result extends StatelessWidget {
               ),
               Expanded(
                 child: FutureBuilder(
-                    future: getData(),
+                    future: loginConsumer.getData(),
                     builder: (context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
+                        print('kkkkk ${snapshot.data}');
                         if (snapshot.data != 0) {
                           return ListView.builder(
                             itemCount: snapshot.data.length,
                             itemBuilder: ((context, index) => Card(
                                   child: ListTile(
-                                    tileColor: Colors.white,
-                                    leading: Text((index + 1).toString()),
+                                    tileColor: Colors.deepOrange,
+                                    leading: Text((index + 1).toString(),
+                                        style: TextStyle(color: Colors.white)),
                                     title: Row(
                                       children: [
                                         Text(
-                                          snapshot.data[index]['score']
-                                              .toString(),
-                                        ),
+                                            '${snapshot.data[index]['score'].toString()} pts',
+                                            style:
+                                                TextStyle(color: Colors.white)),
                                         Spacer(),
                                         Text(
-                                          snapshot.data[index]['date']
-                                              .toDate()
-                                              .toString()
-                                              .substring(0, 11),
-                                        ),
+                                            snapshot.data[index]['date']
+                                                .toDate()
+                                                .toString()
+                                                .substring(0, 11),
+                                            style:
+                                                TextStyle(color: Colors.white)),
                                       ],
                                     ),
                                   ),
